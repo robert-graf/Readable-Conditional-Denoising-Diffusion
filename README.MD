@@ -3,7 +3,7 @@
 
 This is the official 3D code for "Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D"
 
-![img](diffusion3D/images/example3D.jpg)
+![img](diffusion3d/images/example3D.jpg)
 *This repository does not contain a segmentation algorithm.
 
 ## Content
