@@ -25,7 +25,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -104,11 +103,9 @@ ENV/
 # project directories
 data
 data/*
-datasets/*
 output/A/
 output/B/
 output*/
-unet/out*/
 test/datasets/
 taming
 *.gz
