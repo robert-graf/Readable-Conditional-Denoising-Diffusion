@@ -1,5 +1,5 @@
-# Readable Conditional Denoising Diffusion
-## This is the official implementation of the Paper --To be submitted/Under Review--. A frozen branch for reproduction is under TODO ---[here](TODO) TODO---.  
+# Readable Conditional Denoising Diffusion (2D)
+## This is the official implementation of the Paper Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D  
 
 ## Install Python environment
 
@@ -190,6 +190,11 @@ tensorboard --logdir logs_diffusion --port 6007
 cd to the git path. The **logs_diffusion** will be created when you run the diffusion.
 You can see training and images got to "http://localhost:6007" in your web browser. The loss of diffusion converges only in the beginning of the training, the model will still improve.
 
-## Acknowledgements
+## Citation
 
-TODO: Grand info
+This code belongs to the paper "Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D"     
+Robert Graf, Joachim Schmitt, Sarah Schlaeger, Hendrik Kristian Möller,Vasiliki Sideri-Lampretsa, Anjany Sekuboyina, Sandro Manuel Krieg, Benedikt Wiestler, Bjoern Menze, Daniel Rueckert, Jan Stefan Kirschke
+
+## Funding 
+
+The research for this article received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (101045128—iBack-epic—ERC2021-COG). 
