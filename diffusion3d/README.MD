@@ -1,6 +1,6 @@
 
 # Denoising diffusion 3D
-This is the official 3D code for "Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D"
+This is the official 3D code for "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."
 
 ![img](images/example3D.jpg)
 *This repository does not contain a segmentation algorithm.
@@ -43,7 +43,7 @@ See tutorial_T2w_sag_spine_MR2CT.ipynb
 
 ## Citation
 
-This code belongs to the paper "Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D"     
+This code belongs to the paper "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."    
 Robert Graf, Joachim Schmitt, Sarah Schlaeger, Hendrik Kristian Möller,Vasiliki Sideri-Lampretsa, Anjany Sekuboyina, Sandro Manuel Krieg, Benedikt Wiestler, Bjoern Menze, Daniel Rueckert, Jan Stefan Kirschke
 
 ## Funding 

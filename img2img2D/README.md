@@ -1,12 +1,12 @@
 # Readable Conditional Denoising Diffusion (2D)
-## This is the official implementation of the Paper Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D  
+## This is the official implementation of the Paper "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."
 
 ## Install Python environment
 
 This is a more readable implementation of Diffusion based one [lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch). This implementation supports additional papers (see code), DDIM sampling, and Label and Image conditions. 
 
 
-We intend to update this repository to make it more readable. For Black and White images the diffusion process can be done on a single GPU. For color images, we tried to stabilize the diffusion process without requiring huge batch sizes. Currently, most diffusion mechanisms have stability issues with small batch sizes, the avg color is shifting during training. You can fix this by using DDIM instead of DDPM, if the images never converse. Please update us if you have functioning config files or examples where the Diffusion always has meandering colors.
+For Black and White images the diffusion process can be done on a single GPU. For color images, we tried to stabilize the diffusion process without requiring huge batch sizes. Currently, most diffusion mechanisms have stability issues with small batch sizes, the avg color is shifting during training. You can fix this by using DDIM instead of DDPM, if the images never converse. Please update us if you have functioning config files or examples where the Diffusion always has meandering colors.
 
 We want to increase readability. If you find typos or unclear code please make an issue or a pull request. 
 
@@ -192,7 +192,7 @@ You can see training and images got to "http://localhost:6007" in your web brows
 
 ## Citation
 
-This code belongs to the paper "Denoising diffusion-based MR to CT image translation for whole spine vertebral segmentation in 2D and 3D"     
+This code belongs to the paper "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."  
 Robert Graf, Joachim Schmitt, Sarah Schlaeger, Hendrik Kristian Möller,Vasiliki Sideri-Lampretsa, Anjany Sekuboyina, Sandro Manuel Krieg, Benedikt Wiestler, Bjoern Menze, Daniel Rueckert, Jan Stefan Kirschke
 
 ## Funding 
