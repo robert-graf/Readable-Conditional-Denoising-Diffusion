@@ -33,7 +33,7 @@ class Diffusion(pl.LightningModule):
         self.num_timesteps: int = opt.timesteps
         self.channels = channel
         # alpha/beta computation
-        self.constants = Diffusions_Constance("linear" if opt.linear else "cosine", timesteps=self.num_timesteps)
+        self.constance = Diffusions_Constance("linear" if opt.linear else "cosine", timesteps=self.num_timesteps)
         # p2 loss weight, from https://arxiv.org/abs/2204.00227 - 0 is equivalent to weight of 1 across time - 1. is recommended
         self.p2_loss_weight_gamma = 0.0
         self.p2_loss_weight_k = 1
@@ -85,8 +85,6 @@ class Diffusion(pl.LightningModule):
         intermediate: list[Tensor] | None = None,
         force_fixed_variance: bool = False,
         guidance_w: float = 0,
-        guidance_mapping: Callable[[float, float], float] = first,
-        cond_fn=None,
         skip_steps=False,
     ) -> Tensor:  # Tuple[Tensor, typing.List[Tensor]]
         """Generate new Samples from the network
@@ -112,10 +110,6 @@ class Diffusion(pl.LightningModule):
                 Don't use the learned variance. Defaults to False.
             guidance_w (int, optional):
                 Classifier-Free Diffusion Guidance https://arxiv.org/abs/2207.12598. Defaults to 0.
-            guidance_mapping (function, optional):
-                TODO. Defaults to first.
-            cond_fn (function, optional):
-                Network guidance. You provide a function like in utils.diffusion_network_based_guidance. Defaults to None.
             skip_steps (bool, optional):
                 Only use the steps given in intermediate, Skip all others. Defaults to False. Does not produce particularly nice images most of the time.
 
@@ -141,7 +135,7 @@ class Diffusion(pl.LightningModule):
             shape = (batch_size, self.channels, w2, h)
 
         device = self.device
-        self.constants.to(device)
+        self.constance.to(device)
 
         # 1: x_0 ~ Normal(0,I)
         x = torch.randn(shape, device=device).to(torch.float32)
@@ -150,7 +144,7 @@ class Diffusion(pl.LightningModule):
             assert start_timestep != self.num_timesteps, "Don't insert a start time step if you start from scratch"
             # Forward | 5_1: x_t ~ sqrt(a_bar_t) x_0 + sqrt(1-alpha_bar_t)*e
             t = torch.full((batch_size,), start_timestep, device=device, dtype=torch.long)
-            x = self.constants.mix_img_and_noise(encode_target.to(device), x, t.cuda())
+            x = self.constance.mix_img_and_noise(encode_target.to(device), x, t.cuda())
 
         out_intermediate_list = []
         if start_timestep is None:
@@ -181,8 +175,6 @@ class Diffusion(pl.LightningModule):
                 embedding,
                 force_fixed_variance,
                 guidance_w,
-                guidance_mapping,
-                # cond_fn,
             )
         x = self.denormalize(x)
 
@@ -204,8 +196,6 @@ class Diffusion(pl.LightningModule):
         embedding,
         force_fixed_variance=False,
         w: float = 0,
-        guidance_mapping: Callable[[float, float], float] = first,
-        # cond_fn=None,
     ):
         # https://arxiv.org/abs/2006.11239
         # algorithm 2 sampling inner-for-loop
@@ -232,15 +222,15 @@ class Diffusion(pl.LightningModule):
             t.to(torch.float32),
             label=label,
             embedding=embedding,
-        ).to(self.constants.accuracy)
+        ).to(self.constance.accuracy)
         # Compute Variance from prediction or use the fixed variance.
         if self.generator.learned_variance:
             var_pred: Tensor
             e, var_pred = torch.split(e, self.channels, dim=1)
         if self.generator.learned_variance and not force_fixed_variance:
-            variance_sqrt = self.constants.predicted_variance_sqrt(var_pred, t, shape)  # type: ignore
+            variance_sqrt = self.constance.predicted_variance_sqrt(var_pred, t, shape)  # type: ignore
         else:
-            variance_sqrt = self.constants.fixed_variance_sqrt(t, shape)
+            variance_sqrt = self.constance.fixed_variance_sqrt(t, shape)
         # Classifier-Free Diffusion Guidance
         # https://openreview.net/forum?id=qw8AKxfYbI
         # Normalized classifier-free Guidance
@@ -259,19 +249,18 @@ class Diffusion(pl.LightningModule):
                 t.to(torch.float32),
                 label=label,
                 embedding=embedding,
-            ).to(self.constants.accuracy)
+            ).to(self.constance.accuracy)
             if self.opt.image_mode:
                 WarnOnlyOnce.warn("Classifier-Free Diffusion Guidance is not implemented for image_mode in ddpm, use ddim instead.")
             if self.generator.learned_variance:
                 e_unconditional, _ = torch.split(e_unconditional, self.channels, dim=1)
             # My proposal: make w dependent on t, we w can be big when t is big. (Remember t starts at 1000 and goes to 0)
             # Improves short trained models, but with better models it had diminishing returns. :/
-            w = guidance_mapping(w, i)
             e = e + w * (e - e_unconditional)
         #################################################################################
         # 4_1 without "+ Var*noise"
 
-        posterior_mean = self.constants.compute_new_mean(e, t, x, not self.opt.image_mode, self)
+        posterior_mean = self.constance.compute_new_mean(e, t, x, not self.opt.image_mode, self)
 
         # 3 pulling z
         noise = torch.randn_like(x)
@@ -292,7 +281,7 @@ class Diffusion(pl.LightningModule):
         x_out = posterior_mean + variance_sqrt * noise
         if mask_for_inpainting is not None:
             x_out = x_out * (1 - mask_for_inpainting) + x * mask_for_inpainting
-        x_out = x_out.to(self.constants.accuracy)  # type: ignore
+        x_out = x_out.to(self.constance.accuracy)  # type: ignore
 
         return x_out
 
@@ -308,7 +297,6 @@ class Diffusion(pl.LightningModule):
         noise: Tensor | None = None,  # Fixed Noise, Chosen random if not provided
         return_noise: bool = False,
         w: float = 0,  # Classifier-Free Diffusion Guidance
-        guidance_mapping=first,
         progressbar=True,
     ):
         # https://github.com/ermongroup/ddim/blob/51cb290f83049e5381b09a4cc0389f16a4a02cc9/functions/denoising.py#L10
@@ -326,10 +314,10 @@ class Diffusion(pl.LightningModule):
         device = self.device  # self.constants.betas.device
         # 1: x_T ~ Normal(0,I)
         if noise is None:
-            img = torch.randn(shape, device=device).to(self.constants.accuracy)  # type: ignore
+            img = torch.randn(shape, device=device).to(self.constance.accuracy)  # type: ignore
         else:
             assert shape == tuple(noise.shape), f"Expected same shape. noise.shape {tuple(noise.shape)}; expected {shape}"
-            img = noise.to(self.constants.accuracy)
+            img = noise.to(self.constance.accuracy)
         out_intermediate_list = [img.cpu()]
         assert len(seq) != 0
         x0_t: Tensor = img  # no unbound
@@ -352,8 +340,8 @@ class Diffusion(pl.LightningModule):
             t_next = torch.full((batch_size,), j, device=device, dtype=torch.long)
             # Note: this is alpha bar not alpha. The paper is lacy...
             # Note: we use not the precomputed values for higher accuracy
-            self.constants.to(device)
-            a_bar_t, a_bar_t_next = self.constants.ddim_alphas(t, t_next)
+            self.constance.to(device)
+            a_bar_t, a_bar_t_next = self.constance.ddim_alphas(t, t_next)
 
             x = img.to(device)
             x_conditional = x_conditional.to(device) if x_conditional is not None else None
@@ -371,7 +359,7 @@ class Diffusion(pl.LightningModule):
                 t.to(torch.float32),
                 label=label,
                 embedding=embedding,
-            ).to(self.constants.accuracy)
+            ).to(self.constance.accuracy)
 
             if self.generator.learned_variance:
                 # WarnOnlyOnce.warn("Variance is not used in the ddim sampling")
@@ -396,10 +384,9 @@ class Diffusion(pl.LightningModule):
 
                 e_unconditional = self.generator(
                     x_in_unconditional, t.to(torch.float32), label=label, embedding=embedding  # type: ignore
-                ).to(self.constants.accuracy)
+                ).to(self.constance.accuracy)
                 if self.generator.learned_variance:
                     e_unconditional, _ = torch.split(e_unconditional, self.channels, dim=1)
-                w = guidance_mapping(w, i)
                 if self.opt.image_mode:
                     # Instead of noise we get the image, we compute the noise.
                     e_unconditional: Tensor = ((e_unconditional * a_bar_t.sqrt()) - img) / (1 - a_bar_t).sqrt()
@@ -438,7 +425,7 @@ class Diffusion(pl.LightningModule):
 
         if model_out is None:
             x_t_c = torch.cat([x_t, x_conditional], dim=1).to(torch.float32)
-            e_t = self.generator(x_t_c, t.to(torch.float32), label=label).to(self.constants.accuracy)
+            e_t = self.generator(x_t_c, t.to(torch.float32), label=label).to(self.constance.accuracy)
 
             if self.generator.learned_variance:
                 # WarnOnlyOnce.warn("Variance is not used in the ddim sampling")
@@ -449,7 +436,7 @@ class Diffusion(pl.LightningModule):
         else:
             e_t = model_out
         with torch.no_grad():
-            a_bar_t, a_bar_t_next = self.constants.ddim_alphas(t, t_next)
+            a_bar_t, a_bar_t_next = self.constance.ddim_alphas(t, t_next)
             if len(a_bar_t.shape) != len(e_t.shape):
                 a_bar_t.unsqueeze_(1)
                 a_bar_t_next.unsqueeze_(1)
@@ -505,7 +492,7 @@ class Diffusion(pl.LightningModule):
         #        noise[:, j] -= noise[:, j].mean()
 
         # Forward | 5_1: x_t ~ sqrt(a_bar_t) x_0 + sqrt(1-alpha_bar_t)*e
-        x_t = self.constants.mix_img_and_noise(x_0, noise, t)
+        x_t = self.constance.mix_img_and_noise(x_0, noise, t)
         if mask_for_inpainting is None:
             x = x_t
         else:
@@ -535,11 +522,11 @@ class Diffusion(pl.LightningModule):
             # Split prediction in to two equal halves, with same dimensions as input image (excluding conditional).
             model_out, frac = torch.split(model_out, c, dim=1)
             # Compute the real mean and var
-            target_mean = self.constants.compute_posterior_mean(x_0, x_t, t)
-            target_log_var = self.constants.fixed_variance_log(t, x_t.shape)
+            target_mean = self.constance.compute_posterior_mean(x_0, x_t, t)
+            target_log_var = self.constance.fixed_variance_log(t, x_t.shape)
             # Compute the predicted mean and var
-            predicted_mean = self.constants.compute_new_mean(model_out, t, x_t, not self.opt.image_mode, self)
-            predicted_log_variance = self.constants.predicted_variance_log(frac, t, x_t.shape)
+            predicted_mean = self.constance.compute_new_mean(model_out, t, x_t, not self.opt.image_mode, self)
+            predicted_log_variance = self.constance.predicted_variance_log(frac, t, x_t.shape)
             # Compute the Loss
             kl = losses.normal_kl(target_mean, target_log_var, predicted_mean, predicted_log_variance)
             kl = kl.view(b, -1).mean(1) / math.log(2.0)
@@ -585,7 +572,7 @@ class Diffusion(pl.LightningModule):
             # 5_3: ||epsilon - z_theta||
             loss = self.criterion_generator(model_out, noise)
         # The loss has a costume aggregation with weights dependent on t
-        loss = self.constants.weight_and_mean_loss(loss, t) + loss_var
+        loss = self.constance.weight_and_mean_loss(loss, t) + loss_var
         return loss
 
     def validation_step_by_callback(self, batch: Batch_Dict, batch_idx, logger: TensorBoardLogger | None = None, ddpm=False):
@@ -706,20 +693,6 @@ class Diffusion(pl.LightningModule):
                 exit()
 
     def get_mean_std(self, conditional: bool):
-        # assert self.opt.normalize is not None
-        # if conditional and "conditional" in self.opt.normalize:
-        #    info: dict[str, list[float]] = self.opt.normalize["conditional"]  # type: ignore
-        # elif not conditional and "target" in self.opt.normalize:
-        #    info: dict[str, list[float]] = self.opt.normalize["target"]  # type: ignore
-        # else:
-        #    info: dict[str, list[float]] = self.opt.normalize  # type: ignore
-        # mean = info["mean"]
-        # std = info["std"]
-        # if len(mean) == 1 and self.channels != 1:
-        #    mean = [mean[0] for _ in range(self.channels)]
-        #    std = [std[0] for _ in range(self.channels)]
-        #    info["mean"] = mean
-        #    info["std"] = std
         return [0.5], [0.5]
 
     def normalize(self, tensor, conditional=False) -> Tensor:

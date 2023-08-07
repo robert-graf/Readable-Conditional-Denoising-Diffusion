@@ -110,11 +110,6 @@ class Diffusions_Constance(nn.Module):
         self.p2_loss_weight_k = 1
         self.compute_constants(betas)
 
-    def s(self, name, value: Tensor):
-        # save parameter and cast it to float32
-        self.register_buffer(name, value.to(self.accuracy))
-        # getattr(self, name).requires_grad_(False)
-
     def compute_constants(self, betas: Tensor):
         self.betas = betas.to(self.accuracy)
         alphas: Tensor = 1.0 - betas

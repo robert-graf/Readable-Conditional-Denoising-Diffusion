@@ -18,17 +18,21 @@ https://pytorch.org/get-started/locally/
 
 Other packages:
 
-```
+```properties
 pip install pytorch-lightning numpy configargparse einops ipykernel ipython joblib nibabel pandas scikit-image scikit-learn scipy tqdm ema-pytorch
 ```
 
 or
 
+```properties
+conda env create -f environment_small.yml 
+conda activate diffusion3D
 ```
-conda create --name myenv --file environment_small.yml
-# You may have to reinstall pytorch
+You may have to reinstall pytorch, if you install it with environment_small.yml; If a google.protobuf fails 
+```properties
+conda uninstall protobuf
+conda install protobuf==3.19
 ```
-
 ## Dataset generation / Training / Inference
 
 See tutorial_image2image_3D.ipynb

@@ -1,9 +1,9 @@
 #conda env create -f environment_small.yml 
-#conda create -n py3.10 python=3.10
+#conda create -n diffusion3D python=3.10
 #conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
 #conda install -c conda-forge -c defaults pytorch-lightning configargparse einops black pandas nibabel plotly pydicom tqdm scipy matplotlib Pillow torchmetrics
 # 
-name: py3.10
+name: diffusion3D
 channels:
   - conda-forge
   - defaults

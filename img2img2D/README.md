@@ -18,7 +18,8 @@ We are open for feed back!
 
 
 ```properties
-conda env create -f environment_small.yml
+conda env create -f environment_small.yml 
+conda activate diffusion3D
 ```
 
 

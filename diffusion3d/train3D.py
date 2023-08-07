@@ -36,7 +36,7 @@ class Diffusion3D(pl.LightningModule):
         return self.diffusion_net.configure_optimizers()
 
     def training_step(self, train_batch: Batch_Dict, batch_idx):
-        self.diffusion_net.constants.to(self.device)
+        self.diffusion_net.constance.to(self.device)
         loss = self.diffusion_net.training_step(train_batch, batch_idx, do_log=True, compute_loss=True)  # type: ignore
         loss: Tensor = loss.mean()
         return loss
