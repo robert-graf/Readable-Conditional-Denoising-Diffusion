@@ -6,15 +6,13 @@
 This is a more readable implementation of Diffusion based one [lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch). This implementation supports additional papers (see code), DDIM sampling, and Label and Image conditions. 
 
 
-For Black and White images the diffusion process can be done on a single GPU. For color images, we tried to stabilize the diffusion process without requiring huge batch sizes. Currently, most diffusion mechanisms have stability issues with small batch sizes, the avg color is shifting during training. You can fix this by using DDIM instead of DDPM, if the images never converse. Please update us if you have functioning config files or examples where the Diffusion always has meandering colors.
+For Black and White images, the diffusion process can be done on a single GPU. For color images, we tried to stabilize the diffusion process without requiring huge batch sizes. Currently, most diffusion mechanisms have stability issues with small batch sizes, the avg color is shifting during training. You can fix this by using DDIM instead of DDPM, if the images never converse. Please update us if you have functioning config files or examples where the Diffusion always has meandering colors.
 
-We want to increase readability. If you find typos or unclear code please make an issue or a pull request. 
+We want to increase readability. If you need help with typos or unclear code, please make an issue or a pull request. 
 
-This repository also contains a [CUT](https://arxiv.org/abs/2007.15651) (unpaired), CUT (paired), and [Pix2Pix](https://phillipi.github.io/pix2pix/) implementation. The start file is CUT.py.
+This repository also contains a [CUT](https://arxiv.org/abs/2007.15651) (unpaired), CUT+Pix2Pix (paired), and [Pix2Pix](https://phillipi.github.io/pix2pix/) implementation. The start file is CUT.py.
 
-There are experimental files: diffusion_latened.py, diffusion_network_based_guidance.py, CUT_diffusion.py, and AutoencoderKL.py, The support for these files is limited.
-
-We are open for feed back!
+We are open to feedback!
 
 
 ```properties
@@ -24,7 +22,7 @@ conda activate diffusion3D
 
 
 ## Label2Image
-You can use a classification dataset and condition on the classes.
+You can use a classification dataset and condition the classes.
 
 ### Adding a dataset
 
