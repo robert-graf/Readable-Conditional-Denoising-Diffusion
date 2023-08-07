@@ -1,4 +1,5 @@
 
+[![DOI](https://zenodo.org/badge/605981537.svg)](https://zenodo.org/badge/latestdoi/605981537)
 # Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations.
 
 This is the official 3D code for "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."

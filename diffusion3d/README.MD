@@ -1,4 +1,4 @@
-
+[![DOI](https://zenodo.org/badge/605981537.svg)](https://zenodo.org/badge/latestdoi/605981537)
 # Denoising diffusion 3D
 This is the official 3D code for "Denoising diffusion-based MR to CT image translation enables whole spine vertebral segmentation in 2D and 3D without manual annotations."
 
@@ -39,7 +39,9 @@ See tutorial_image2image_3D.ipynb
 
 ## Inference T2w to CT on Sagittal Spine
 
-We provide our weight for DDIM image under 'logs_diffusion3D/Diffusion_3D_T2w_CT_spine_sag/version_0/T2_to_CT_iso_diffusion_img.pt'
+We provide our weight for DDIM image under 'logs_diffusion3D/Diffusion_3D_T2w_CT_spine_sag/version_0/T2_to_CT_iso_diffusion_img.pt' in the archived version https://zenodo.org/record/8221159 or under this mirror: [Drive-link](https://studentpartnersde-my.sharepoint.com/:f:/g/personal/robert_graf_studentpartners_de/El5c-wZ7TXZJjpo8snSNAAsBpyiAlM4vzaBO5dr3y79fAw?e=O3Xaq3)
+
+
 
 We provide sample data in 'data/spine'
 
