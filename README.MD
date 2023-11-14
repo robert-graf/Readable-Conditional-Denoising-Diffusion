@@ -13,8 +13,9 @@ This Repository contains image-2-image translation algorithms. In folder "img2im
 
 ## Citation
 
-This code belongs to the paper "Graf, R., Schmitt, J., Schlaeger, S. et al. Denoising diffusion-based MRI to CT image translation enables automated spinal segmentation. Eur Radiol Exp 7, 70 (2023)." 
 [https://doi.org/10.1186/s41747-023-00385-2](https://doi.org/10.1186/s41747-023-00385-2)
+
+https://doi.org/10.1186/s41747-023-00385-2
 
 ## Funding 
 
