@@ -82,12 +82,12 @@ def translate(mri_path: BIDS_FILE, use_cpu=False):
         print("!!! Fall back to less steps on CPU instead of 25 GPU. !!!")
         ct_arr = run_model(diffusion, conditional=arr, gpu=False, eta=1, w=0, steps=5, depth=0)
     ct_nii_iso = nii_iso.set_array(ct_arr.numpy())
-    ct_nii_iso[nii_iso <= -0.99] = -1024
+    # ct_nii_iso[nii_iso <= -1] = -1024
     print("nii", nii)
     ct_nii: NII = ct_nii_iso.set_dtype("smallest_int").resample_from_to(nii, mode="constant")
     ct_nii = ct_nii.apply_crop(ct_nii.compute_crop())
-    ct_path = mri_path.get_changed_path("nii.gz", "ct", "rawdata_synthetic", info={"desc": "generated", "acq": "sag"})
-    ct_path_iso = mri_path.get_changed_path("nii.gz", "ct", "rawdata_synthetic", info={"desc": "generated", "acq": "iso"})
+    ct_path = mri_path.get_changed_path("nii.gz", "ct", "rawdata_synthetic-v2", info={"desc": "generated", "acq": "sag"})
+    ct_path_iso = mri_path.get_changed_path("nii.gz", "ct", "rawdata_synthetic-v2", info={"desc": "generated", "acq": "iso"})
     print("ct", ct_nii)
     print("ct_nii", ct_nii_iso)
 
@@ -99,7 +99,7 @@ def translate(mri_path: BIDS_FILE, use_cpu=False):
 if __name__ == "__main__":
 
     def filter_file(file: Path):
-        return True
+        # return True
         return "118688_sequ-" in file.name
 
     bgi = Buffered_BIDS_Global_info(dataset, parents=["rawdata_stitched"], filter_file=filter_file)
