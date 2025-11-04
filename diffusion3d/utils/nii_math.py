@@ -1,18 +1,17 @@
-from typing import TYPE_CHECKING
-from typing_extensions import Self
-import numpy as np
-from numbers import Number
 import operator
 from math import ceil, floor
+from numbers import Number
 
+import numpy as np
+from typing_extensions import Self
 
 # fmt: off
 
-class NII_Proxy():
+class NII_Proxy:
     pass
 C = Self|Number|np.ndarray
 class NII_Math(NII_Proxy):
-    
+
     def _binary_opt(self, other:C, opt,inplace = False)-> Self:
         if isinstance(other,NII_Math):
             other = other.get_array()
@@ -80,7 +79,7 @@ class NII_Math(NII_Proxy):
         return self._uni_opt(operator.pos)
     def __abs__(self):
         return self._uni_opt(operator.abs)
-    
+
     def __round__(self):
         return self._uni_opt(np.round)
     def __floor__(self):
@@ -91,7 +90,7 @@ class NII_Math(NII_Proxy):
         return self.get_array().max()
     def min(self)->float:
         return self.get_array().min()
-    
+
     def clamp(self, min=None,max=None,inplace=False)->Self:
         arr = self.get_array()
         if min != None:
@@ -99,7 +98,7 @@ class NII_Math(NII_Proxy):
         if max != None:
             arr[arr>= max] = max
         return self.set_array(arr,inplace=inplace)
-    
+
     def clamp_(self, min=None,max=None):
         return self.clamp(min,max,inplace=True)
 
@@ -122,7 +121,7 @@ class NII_Math(NII_Proxy):
     def pad_to(self,target_shape:list[int]|tuple[int,int,int], mode="constant",inplace = False):
         padding = []
         crop = []
-        for in_size, out_size in zip(self.shape[-3:], target_shape[-3:]):
+        for in_size, out_size in zip(self.shape[-3:], target_shape[-3:], strict=False):
             to_pad_size = max(0, out_size - in_size) / 2.0
             to_crop_size = -min(0, out_size - in_size) / 2.0
             padding.extend([(ceil(to_pad_size), floor(to_pad_size))])

@@ -19,7 +19,7 @@ https://pytorch.org/get-started/locally/
 Other packages:
 
 ```properties
-pip install pytorch-lightning numpy configargparse einops ipykernel ipython joblib nibabel pandas scikit-image scikit-learn scipy tqdm ema-pytorch
+pip install pytorch-lightning numpy configargparse einops ipykernel ipython joblib nibabel pandas scikit-image scikit-learn scipy tqdm ema-pytorch TPTBox
 ```
 
 or
@@ -27,6 +27,7 @@ or
 ```properties
 conda env create -f environment_small.yml 
 conda activate diffusion3D
+pip install TPTBox
 ```
 You may have to reinstall pytorch, if you install it with environment_small.yml; If a google.protobuf fails 
 ```properties
