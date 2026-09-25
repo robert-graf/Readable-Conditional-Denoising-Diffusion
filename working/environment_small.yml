@@ -1,0 +1,57 @@
+#conda env create -f environment_small.yml 
+#conda create -n py3.10 python=3.10
+#conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+#conda install -c conda-forge -c defaults pytorch-lightning configargparse einops black pandas nibabel plotly pydicom tqdm scipy matplotlib Pillow torchmetrics
+# 
+name: py3.10
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+  #- photosynthesis-team
+dependencies:
+  - python=3.10
+  - numpy
+  - pytorch 
+  - torchvision 
+  - torchaudio 
+  - cudatoolkit #=11.3
+  - pytorch-lightning
+  - configargparse
+  - einops
+  - black
+  #- future
+  #- h5py
+  #- hdf5
+  - imageio
+  - ipykernel
+  - ipython
+  - joblib
+  - jupyter
+  - matplotlib
+  - nibabel
+  - pandas
+  - pillow
+  - pip
+  - plotly
+  - pydicom
+  - pylint
+  #- qt
+  - regex
+  - scikit-image
+  - scikit-learn
+  - scipy
+  #- seaborn
+  #- toml
+  - tqdm
+  #- wget
+  #- yaml
+  #- zlib
+  #- piq
+  - pip:
+    - elasticdeform
+    #- taming-transformers
+    - ema-pytorch
+    - piq
+
+  #python -m pip install package-name
